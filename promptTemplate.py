@@ -8,6 +8,7 @@ llm = ChatGoogleGenerativeAI(
 model="gemini-3.8-flash",
 google_api_key=os.getenv("GOOGLE_API_KEY")
 )
+#customizing input
 #initializing the prompt template
 prompt=ChatPromptTemplate.from_messages([
     ("system","you are a helpful travel agent"),
