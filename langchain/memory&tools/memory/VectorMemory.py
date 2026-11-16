@@ -1,6 +1,6 @@
 
 import os
-import faiss
+import faiss #pip install langchain-community faiss-cpu
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -10,6 +10,7 @@ from langchain_google_genai import (
     ChatGoogleGenerativeAI,
     GoogleGenerativeAIEmbeddings
 )
+from langchain_community.docstore.in_memory import InMemoryDocstore
 
 # Prompt
 from langchain_core.prompts import ChatPromptTemplate
@@ -31,10 +32,18 @@ from langchain_community.docstore.in_memory import InMemoryDocstore
 # ==========================================
 
 load_dotenv()
+# Read the correct environment variable
+api_key = os.getenv("GEMINI_API_KEY")
+
+# Verify before initializing either model
+print("API key loaded:", bool(api_key))
+
+if not api_key:
+    raise ValueError("GEMINI_API_KEY is missing")
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-3.8-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
+    google_api_key=api_key,
     temperature=0
 )
 
@@ -67,7 +76,7 @@ from langchain_community.vectorstores import FAISS ##similarity search
 
 embeddings = GoogleGenerativeAIEmbeddings(
     model="models/gemini-embedding-001",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    api_key=api_key
 )
 
 init_kb=["""Traveling is not just about visiting new destinations; its about embracing new cultures, experiencing diverse cuisines ,and opening your mind to the world's endless adventures. packing efficiently is key to stress-free travel. Always check the weather forecast for your destination and pack clothes accordingly .For Paris,it's common for rain showers to according to the weather.
@@ -120,4 +129,7 @@ for msg in user_messages:
     {"output":raw_response.content}
     )
 
+    print("\nall retrievable memory chunks(vectore store):\n")
+    for doc  in vectorstore.docstore.__dict.values():
+        print("-",doc.page_content)
 
