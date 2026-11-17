@@ -26,7 +26,9 @@ search_prompt=ChatPromptTemplate.from_template(
 
 search_chain=search_prompt|llm
 
-wiki_search_phrase=search_chain.invoke({"user_question"})
+wiki_search_phrase = search_chain.invoke({
+    "user_question": user_question
+})
 print("WikiSearch phrase:",wiki_search_phrase)
 
 wiki_retriever=WikipediaRetriever(top_k_results=3)
